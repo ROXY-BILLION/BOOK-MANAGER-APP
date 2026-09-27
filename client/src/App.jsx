@@ -35,6 +35,7 @@ function App() {
   const [formData, setFormData] = useState(emptyForm);
 
   const [editingBookId, setEditingBookId] = useState(null);
+  const [bookToDelete, setBookToDelete] = useState(null);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -47,28 +48,28 @@ function App() {
   const [selectedGenre, setSelectedGenre] = useState("All");
 
   useEffect(() => {
-  const fetchBooks = async () => {
-    try {
-      setLoading(true);
-      setError("");
+    const fetchBooks = async () => {
+      try {
+        setLoading(true);
+        setError("");
 
-      const response = await axios.get(API_URL);
+        const response = await axios.get(API_URL);
 
-      setBooks(response.data.books);
-    } catch (error) {
-      console.error("GET BOOKS ERROR:", error);
+        setBooks(response.data.books);
+      } catch (error) {
+        console.error("GET BOOKS ERROR:", error);
 
-      setError(
-        error.response?.data?.message ||
-          "Unable to connect to the server."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+        setError(
+          error.response?.data?.message ||
+            "Unable to connect to the server."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  fetchBooks();
-}, []);
+    fetchBooks();
+  }, []);
 
   const genres = useMemo(() => {
     const uniqueGenres = [
@@ -210,12 +211,6 @@ function App() {
   };
 
   const handleDelete = async (bookId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this book?"
-    );
-
-    if (!confirmed) return;
-
     try {
       setDeletingBookId(bookId);
       setError("");
@@ -244,6 +239,16 @@ function App() {
     }
   };
 
+  const confirmDelete = async () => {
+    if (!bookToDelete) return;
+
+    const bookId = bookToDelete._id;
+
+    setBookToDelete(null);
+
+    await handleDelete(bookId);
+  };
+
   return (
     <div className="app">
       <div className="background-glow glow-one"></div>
@@ -260,7 +265,6 @@ function App() {
             <span>Library Management</span>
           </div>
         </div>
-
       </header>
 
       <main className="container">
@@ -319,6 +323,7 @@ function App() {
 
             <div>
               <span>Collection Value</span>
+
               <strong>
                 ₦{totalValue.toLocaleString()}
               </strong>
@@ -332,6 +337,7 @@ function App() {
 
             <div>
               <span>Latest Addition</span>
+
               <strong>
                 {latestBook
                   ? latestBook.publishedYear
@@ -551,6 +557,7 @@ function App() {
                 <FontAwesomeIcon
                   icon={faTriangleExclamation}
                 />
+
                 {error}
               </div>
             )}
@@ -558,11 +565,17 @@ function App() {
             {loading ? (
               <div className="empty-state">
                 <div className="loading-icon">
-                  <FontAwesomeIcon icon={faRotate} spin />
+                  <FontAwesomeIcon
+                    icon={faRotate}
+                    spin
+                  />
                 </div>
 
                 <h4>Loading your library...</h4>
-                <p>Please wait while we fetch your books.</p>
+
+                <p>
+                  Please wait while we fetch your books.
+                </p>
               </div>
             ) : filteredBooks.length === 0 ? (
               <div className="empty-state">
@@ -588,9 +601,7 @@ function App() {
                     <div className="book-cover">
                       <FontAwesomeIcon icon={faBook} />
 
-                      <span>
-                        {book.genre}
-                      </span>
+                      <span>{book.genre}</span>
                     </div>
 
                     <div className="book-content">
@@ -610,41 +621,36 @@ function App() {
                       <h4>{book.title}</h4>
 
                       <p className="author">
-                        <FontAwesomeIcon
-                          icon={faUser}
-                        />
+                        <FontAwesomeIcon icon={faUser} />
                         {book.author}
                       </p>
 
                       <div className="card-actions">
                         <button
                           className="edit-button"
+                          type="button"
                           onClick={() =>
                             handleEdit(book)
                           }
                         >
-                          <FontAwesomeIcon
-                            icon={faPen}
-                          />
+                          <FontAwesomeIcon icon={faPen} />
                           Edit
                         </button>
 
                         <button
                           className="delete-button"
+                          type="button"
                           onClick={() =>
-                            handleDelete(book._id)
+                            setBookToDelete(book)
                           }
                           disabled={
                             deletingBookId ===
                             book._id
                           }
                         >
-                          <FontAwesomeIcon
-                            icon={faTrash}
-                          />
+                          <FontAwesomeIcon icon={faTrash} />
 
-                          {deletingBookId ===
-                          book._id
+                          {deletingBookId === book._id
                             ? "Deleting"
                             : "Delete"}
                         </button>
@@ -663,6 +669,66 @@ function App() {
         <span>BookVault</span>
         <small>Built with MERN</small>
       </footer>
+
+      {bookToDelete && (
+        <div
+          className="modal-overlay"
+          onClick={() => setBookToDelete(null)}
+        >
+          <div
+            className="delete-modal"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              className="modal-close"
+              type="button"
+              onClick={() => setBookToDelete(null)}
+            >
+              <FontAwesomeIcon icon={faXmark} />
+            </button>
+
+            <div className="delete-modal-icon">
+              <FontAwesomeIcon icon={faTrash} />
+            </div>
+
+            <span className="modal-label">
+              DELETE BOOK
+            </span>
+
+            <h3>Remove this book?</h3>
+
+            <p>
+              You are about to remove{" "}
+              <strong>{bookToDelete.title}</strong>{" "}
+              from your library. This action cannot be
+              undone.
+            </p>
+
+            <div className="modal-actions">
+              <button
+                className="modal-cancel"
+                type="button"
+                onClick={() => setBookToDelete(null)}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="modal-delete"
+                type="button"
+                onClick={confirmDelete}
+                disabled={deletingBookId !== null}
+              >
+                <FontAwesomeIcon icon={faTrash} />
+
+                {deletingBookId
+                  ? "Deleting..."
+                  : "Delete Book"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

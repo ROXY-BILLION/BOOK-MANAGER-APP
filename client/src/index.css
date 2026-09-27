@@ -1,5 +1,219 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
+/* DELETE MODAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(3, 5, 15, 0.78);
+  backdrop-filter: blur(12px);
+
+  animation: modalOverlayIn 0.2s ease;
+}
+
+.delete-modal {
+  position: relative;
+
+  width: 100%;
+  max-width: 440px;
+
+  padding: 34px;
+
+  background: #0d1020;
+
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 24px;
+
+  text-align: center;
+
+  box-shadow:
+    0 30px 90px rgba(0, 0, 0, 0.6),
+    0 0 50px rgba(139, 92, 246, 0.1);
+
+  animation: modalIn 0.25s ease;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #252c46;
+  border-radius: 10px;
+
+  color: #8991aa;
+  background: #121629;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  color: #f8fafc;
+  border-color: #8b5cf6;
+  transform: rotate(90deg);
+}
+
+.delete-modal-icon {
+  width: 64px;
+  height: 64px;
+
+  margin: 0 auto 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 18px;
+
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+
+  font-size: 24px;
+}
+
+.modal-label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #f87171;
+
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.delete-modal h3 {
+  margin: 0 0 10px;
+
+  color: #f8fafc;
+
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.delete-modal p {
+  max-width: 350px;
+
+  margin: 0 auto 28px;
+
+  color: #8991aa;
+
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.delete-modal p strong {
+  color: #f8fafc;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.modal-actions button {
+  flex: 1;
+
+  min-height: 48px;
+
+  border-radius: 12px;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.modal-actions button:hover {
+  transform: translateY(-2px);
+}
+
+.modal-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.modal-cancel {
+  color: #cbd5e1;
+  background: #181d34;
+  border: 1px solid #252c46;
+}
+
+.modal-cancel:hover {
+  border-color: #3b82f6;
+}
+
+.modal-delete {
+  color: #ffffff;
+  background: #dc2626;
+  border: 1px solid #dc2626;
+}
+
+.modal-delete:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+@keyframes modalOverlayIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .delete-modal {
+    padding: 28px 22px;
+    border-radius: 20px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal-actions button {
+    width: 100%;
+  }
+}
 :root {
   --bg: #070812;
   --surface: #0d1020;
